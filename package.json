@@ -1,0 +1,21 @@
+{
+  "name": "roblox-account-linking",
+  "version": "1.0.0",
+  "description": "Roblox Account Linking System - Code Verification for Roblox Games",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "keywords": [
+    "roblox",
+    "account-linking",
+    "verification",
+    "nodejs",
+    "express"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
