@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 10;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.accent-text {
+  color: #ff6a00;
+}
+
+.accent-bg {
+  background-color: #ff6a00;
+}
+
+.accent-border {
+  border-color: #ff6a00;
+}
+
+.accent-glow {
+  box-shadow: 0 0 20px rgba(255, 106, 0, 0.3);
+}
+
+.accent-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(255, 106, 0, 0.5);
+}
