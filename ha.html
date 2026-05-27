@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xerion X - Roblox Shop</title>
+    <style>
+        :root {
+            --bg-color: #1a1b1e; /* Roblox Dark Theme */
+            --card-bg: #232527;
+            --text-main: #ffffff;
+            --text-sec: #adadad;
+            --accent: #00b06f; /* Roblox Green */
+            --danger: #ff4d4d;
+            --glass: rgba(35, 37, 39, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header & Nav --- */
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: bold; letter-spacing: 1px; }
+        .logo span { color: var(--accent); }
+
+        .admin-btn {
+            background: transparent;
+            border: 1px solid var(--text-sec);
+            color: var(--text-sec);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* --- Main Shop Grid --- */
+        main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        h1 { margin-bottom: 30px; font-size: 2rem; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .img-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #2c2f33, #383b40);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-sec);
+            font-size: 3rem;
+        }
+        
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-info { padding: 15px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 1.1rem; margin-bottom: 5px; font-weight: 600; }
+        .card-desc { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 15px; flex: 1; }
+        
+        .price-tag {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .robux-icon {
+            width: 16px; height: 16px;
+            background: white;
+            border-radius: 50%; /* Simplified Robux Icon */
+            display: inline-block;
+            border: 2px solid #333;
+        }
+
+        .buy-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .buy-btn:hover { background: #00915b; }
+
+        /* --- Admin Modal --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .modal h2 { margin-bottom: 20px; }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .btn-group { display: flex; gap: 10px; justify-content: flex-end; }
+        
+        .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        .btn-secondary { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        .btn-danger { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; margin-top: 5px;}
+
+        /* Admin List in Modal */
+        .admin-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-top: 1px solid #444;
+            padding-top: 10px;
+        }
+        .admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #1a1b1e;
+            margin-bottom: 8px;
+            border-radius: 6px;
+        }
+
+        /* Footer Demo Notice */
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">XERION <span>X</span></div>
+        <button class="admin-btn" onclick="openAdminLogin()">Admin Panel</button>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <h1>Shop Items</h1>
+        <div class="product-grid" id="shopGrid">
+            <!-- Products will be injected here via JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        Demo Website | No Trackers | <a href="#" style="color:var(--accent)">Purchase Terms</a>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <h2>Admin Login</h2>
+            <input type="password" id="adminPass" placeholder="Enter Password">
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModals()">Cancel</button>
+                <button class="btn-primary" onclick="checkLogin()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal">
+            <h2>Manage Products</h2>
+            
+            <!-- Add New Product Form -->
+            <input type="text" id="newTitle" placeholder="Product Name">
+            <input type="number" id="newPrice" placeholder="Price (Robux)">
+            <input type="text" id="newImg" placeholder="Image URL (optional)">
+            <textarea id="newDesc" rows="3" placeholder="Description"></textarea>
+            
+            <div class="btn-group" style="margin-bottom: 20px;">
+                <button class="btn-primary" onclick="addProduct()">Add Product</button>
+            </div>
+
+            <!-- List Existing Products -->
+            <h3>Existing Products</h3>
+            <div class="admin-list" id="adminList">
+                <!-- List items injected here -->
+            </div>
+
+            <div class="btn-group" style="margin-top: 20px;">
+                <button class="btn-secondary" onclick="closeModals()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const ADMIN_PASSWORD = "admin123"; // Ändere dies zu deinem gewünschten Passwort
+        
+        // --- State Management ---
+        let products = JSON.parse(localStorage.getItem('xerion_products')) || [
+            { id: 1, title: "VIP Gamepass", price: 500, desc: "Get exclusive VIP perks in-game.", img: "" },
+            { id: 2, title: "Speed Coil Tool", price: 150, desc: "Move faster than everyone else.", img: "" },
+            { id: 3, title: "Golden Sword", price: 1000, desc: "A legendary weapon for heroes.", img: "" }
+        ];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderShop();
+        });
+
+        // --- Render Functions ---
+        function renderShop() {
+            const grid = document.getElementById('shopGrid');
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // Image handling (Placeholder if empty)
+                const imgDisplay = product.img 
+                    ? `<img src="${product.img}" alt="${product.title}">` 
+                    : `<div class="img-placeholder">📦</div>`;
+
+                card.innerHTML = `
+                    ${imgDisplay}
+                    <div class="card-info">
+                        <div class="card-title">${product.title}</div>
+                        <div class="card-desc">${product.desc}</div>
+                        <div class="price-tag">
+                            <span class="robux-icon"></span> ${product.price} R$
+                        </div>
+                        <button class="buy-btn" onclick="buyProduct(${product.id})">Buy Now</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('adminList');
+            list.innerHTML = '';
+
+            products.forEach(product => {
+                const item = document.createElement('div');
+                item.className = 'admin-item';
+                item.innerHTML = `
+                    <span>${product.title} (${product.price} R$)</span>
+                    <button class="btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // --- Logic Functions ---
+
+        function buyProduct(id) {
+            alert("Redirecting to Roblox Checkout for Item ID: " + id);
+            // Hier würde die Logik für Roblox OAuth / Gamepass Check stehen
+        }
+
+        // --- Admin Functions ---
+
+        function openAdminLogin() {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+
+        function checkLogin() {
+            const input = document.getElementById('adminPass').value;
+            if(input === ADMIN_PASSWORD) {
+                closeModals();
+                document.getElementById('adminModal').style.display = 'flex';
+                renderAdminList();
+                document.getElementById('adminPass').value = ''; // Clear password
+            } else {
+                alert("Wrong Password!");
+            }
+        }
+
+        function addProduct() {
+            const title = document.getElementById('newTitle').value;
+            const price = document.getElementById('newPrice').value;
+            const desc = document.getElementById('newDesc').value;
+            const img = document.getElementById('newImg').value;
+
+            if(!title || !price) {
+                alert("Please fill in Title and Price");
+                return;
+            }
+
+            const newProduct = {
+                id: Date.now(), // Unique ID based on timestamp
+                title: title,
+                price: parseInt(price),
+                desc: desc,
+                img: img
+            };
+
+            products.push(newProduct);
+            saveData();
+            renderShop();
+            renderAdminList();
+            
+            // Clear inputs
+            document.getElementById('newTitle').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('newDesc').value = '';
+            document.getElementById('newImg').value = '';
+        }
+
+        function deleteProduct(id) {
+            if(confirm("Are you sure you want to delete this product?")) {
+                products = products.filter(p => p.id !== id);
+                saveData();
+                renderShop();
+                renderAdminList();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('xerion_products', JSON.stringify(products));
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                closeModals();
+            }
+        }
+    </script>
+</body>
+</html>
